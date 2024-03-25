@@ -8,6 +8,7 @@ import {
   convertFloatTimeToHHMM,
 } from "~/utils/dateTimeUtils";
 import { TransformedCalendarEvent } from "~/utils/transformCalendarEvents";
+import { calculateWorkTimeFromAttendance } from "~/utils/calculateWorkTime";
 
 interface Props {
   timesAndEventsOfSelectedWeek: {
@@ -51,21 +52,6 @@ export function WeekTable({
     }
 
     return getItemForEventType(event.type);
-  }
-
-  function calculateWorkTime(attendance: PersonioAttendance): string {
-    const momentBreakTime = moment(
-      minutesToTime(attendance.breakTime),
-      "HH:mm",
-    );
-    const momentStartTime = moment(attendance.startTime, "HH:mm");
-
-    return moment(attendance.endTime, "HH:mm")
-      .subtract(momentBreakTime.hours(), "hours")
-      .subtract(momentBreakTime.minutes(), "minutes")
-      .subtract(momentStartTime.hours(), "hours")
-      .subtract(momentStartTime.minutes(), "minutes")
-      .format("H:mm");
   }
 
   function displayHours(index: number): string {
@@ -129,12 +115,13 @@ export function WeekTable({
                         "workhours-fri",
                       ][index]
                     }
+                    id={"workhours-" + (index + 1)}
                     className={`text-base font-medium ${
                       attendance ? "text-black" : "text-gray-500"
                     }`}
                   >
                     {attendance
-                      ? calculateWorkTime(attendance)
+                      ? calculateWorkTimeFromAttendance(attendance)
                       : displayHours(index)}
                   </p>
                 </div>

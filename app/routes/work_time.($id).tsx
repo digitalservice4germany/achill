@@ -21,6 +21,7 @@ import {
 import { TimeInput } from "~/components/common/TimeInput";
 import { minutesToTime } from "~/utils/dateTimeUtils";
 import { workTimeFormDataSchema } from "~/utils/workTimeFormValidator";
+import { calculateWorkTimeFromStrings } from "~/utils/calculateWorkTime";
 
 type ActionResponse =
   | (PersonioAttendance & { success: boolean })
@@ -125,6 +126,15 @@ export function WorkTimeForm({
       ? attendanceOfSelectedDate.endTime
       : getEndTime(workTime),
   );
+  const [worktimeLive, setWorktimeLive] = useState(
+    calculateWorkTimeFromStrings(startTime, breakTime, endTime),
+  );
+  useEffect(() => {
+    // here
+    setWorktimeLive(
+      calculateWorkTimeFromStrings(startTime, breakTime, endTime),
+    );
+  }, [startTime, breakTime, endTime]);
   const [isEdit, setIsEdit] = useState(!attendanceOfSelectedDate);
   const [validationErrors, setValidationErrors] = useState<
     Record<string, string>
@@ -239,7 +249,15 @@ export function WorkTimeForm({
           ))}
         </ul>
       )}
-      <div className="flex flex-col lg:flex-row gap-2 self-end justify-end items-end basis-40 lg:basis-60">
+      <div className="flex flex-col lg:flex-row gap-2 self-end justify-end items-center basis-40 lg:basis-60">
+        <div className="flex min-w-[6ch] justify-center px-2 py-2">
+          <p
+            id="workhours-live-display"
+            className="text-base font-medium text-black"
+          >
+            {worktimeLive}
+          </p>
+        </div>
         {attendanceOfSelectedDate ? (
           isEdit ? (
             <>
